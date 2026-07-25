@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UP 23 WALA Jr. Icecream</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffeef8, #e0f7ff);
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #ff4da6;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px #fff;
+  }
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+  }
+  .card {
+    background: white;
+    border-radius: 20px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  .card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 15px;
+  }
+  .card h3 { margin: 10px 0 5px; color: #333; }
+  .price { color: #ff4da6; font-weight: bold; font-size: 1.1rem; }
+  .add-btn {
+    background: #ff4da6; color: white; border: none;
+    padding: 10px 20px; border-radius: 50px; font-size: 1rem;
+    cursor: pointer; margin-top: 10px; transition: 0.2s;
+  }
+  .add-btn:active { transform: scale(0.9); }
+  .cart {
+    max-width: 600px; margin: 40px auto; background: white;
+    border-radius: 20px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .cart h2 { color: #ff4da6; text-align: center; }
+  .cart-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #ddd; }
+  .order-btn {
+    width: 100%; background: #25D366; color: white; border: none;
+    padding: 15px; border-radius: 50px; font-size: 1.2rem; font-weight: bold;
+    cursor: pointer; margin-top: 15px;
+  }
+  .customer-info {
+    margin: 10px 0;
+  }
+  .customer-info input {
+    width: 100%; padding: 10px; border: 1px solid #ddd;
+    border-radius: 10px; margin-top: 5px; font-size: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>🍦 UP 23 WALA Jr. Icecream 🍦</h1>
+
+<div class="menu" id="menu"></div>
+
+<div class="cart">
+  <h2>🛒 Teri Tokri</h2>
+  <div id="cart-list">
+    <p style="text-align:center; color:gray;">Abhi kuch nahi liya</p>
+  </div>
+  <h3 style="text-align:right; color:#ff4da6;" id="total"></h3>
+  
+  <div class="customer-info">
+    <input type="text" id="customerName" placeholder="Apna Naam">
+    <input type="text" id="customerAddress" placeholder="Address Bazpur me">
+  </div>
+  
+  <button class="order-btn" onclick="placeOrder()">📱 WhatsApp pe Order Bhejo</button>
+</div>
+
+<script>
+  const icecreams = [
+    {name: "Chocolate Blast", price: 50, img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=400"},
+    {name: "Strawberry Dream", price: 60, img: "https://images.unsplash.com/photo-1501443762994-82bd5dace89b?w=400"},
+    {name: "Vanilla Magic", price: 45, img: "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?w=400"},
+    {name: "Butterscotch Royal", price: 70, img: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400"},
+    {name: "Mango Tango", price: 55, img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400"},
+    {name: "Kesar Pista", price: 80, img: "https://images.unsplash.com/photo-1516042791147-2b4c3e0cfe0c?w=400"}
+  ];
+
+  let cart = {};
+  const MY_WHATSAPP = "918384836005";
+
+  function renderMenu() {
+    const menu = document.getElementById('menu');
+    menu.innerHTML = '';
+    icecreams.forEach((item, index) => {
+      menu.innerHTML += `
+        <div class="card">
+          <img src="${item.img}" alt="${item.name}">
+          <h3>${item.name}</h3>
+          <p class="price">₹${item.price}</p>
+          <button class="add-btn" onclick="addToCart(${index})">Add</button>
+        </div>
+      `;
+    });
+  }
+
+  function addToCart(index) {
+    const item = icecreams[index];
+    if(cart[item.name]) {
+      cart[item.name].qty += 1;
+    } else {
+      cart[item.name] = {price: item.price, qty: 1};
+    }
+    updateCart();
+  }
+
+  function updateCart() {
+    const cartList = document.getElementById('cart-list');
+    const totalEl = document.getElementById('total');
+    cartList.innerHTML = '';
+    let total = 0;
+    
+    if(Object.keys(cart).length === 0) {
+      cartList.innerHTML = '<p style="text-align:center; color:gray;">Abhi kuch nahi liya</p>';
+    } else {
+      for(let name in cart) {
+        const item = cart[name];
+        total += item.price * item.qty;
+        cartList.innerHTML += `
+          <div class="cart-item">
+            <span>${name}</span>
+            <span>${item.qty} x ₹${item.price}</span>
+          </div>
+        `;
+      }
+    }
+    totalEl.innerText = total > 0 ? `Total: ₹${total}` : '';
+  }
+
+  function placeOrder() {
+    if(Object.keys(cart).length === 0) {
+      alert("Pehle kuch Add karo King! 🍦");
+      return;
+    }
+    
+    const name = document.getElementById('customerName').value;
+    const address = document.getElementById('customerAddress').value;
+    
+    if(name === "" || address === "") {
+      alert("Naam aur Address likh do pehle!");
+      return;
+    }
+
+    let message = `*Naya Icecream Order* 🍦\n\n`;
+    message += `*Naam:* ${king}\n`;
+    message += `*Address:* ${Amroha}\n\n`;
+    message += `*Order Details:*\n`;
+    
+    let total = 0;
+    for(let name in cart) {
+      const item = cart[name];
+      total += item.price * item.qty;
+      message += `- ${name} : ${item.qty} x ₹${item.price}\n`;
+    }
+    message += `\n*Total Bill: ₹${total}*`;
+    
+    const whatsappURL = `https://wa.me/${MY_WHATSAPP}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, '_blank');
+  }
+
+  renderMenu();
+</script>
+
+</body>
+</html>
